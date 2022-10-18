@@ -10,74 +10,17 @@ const port = process.env.PORT || 5000;
 const { errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 const cors = require("cors");
-const connectDb2 = require("./config/db2");
 
-// const contestSchema = require("./models/contestModel");
-// const tempUserSchema = require("./models/tempUserModel");
-// const userSchema = require("./models/userModel");
-// const problemSchema = require("./models/problem");
+const problemSchema = require("./models/problem");
 
 // Connect to MonogoDB.
 connectDb();
-connectDb2();
 
-// const a = async () => {
-//   const db1 = await connectDb();
-//   // const {db1} = require("./config/db")
-//   const Contest = db1.model("Contest", contestSchema);
-//   const TempUser = db1.model("TempUser", tempUserSchema);
-//   const User = db1.model("User", userSchema);
-
-//   return {
-//     Contest: Contest,
-//     TempUser: TempUser,
-//     User: User
-//   }
-// }
-
-// // Connect MongoDB-2 for practice ladder data.
-
-// const b = async () => {
-//   const db2 = await connectDb2();
-//   const Problem = db2.model('Problem', problemSchema);
-//   // const {db2} = require("./config/db2")
-//   return {
-//     Problem: Problem
-//   };
-// }
-
-// const a1 = a();
-// const b1 = b();
-
-// const Contest = a1.Contest;
-// const TempUser = a1.TempUser;
-// const User = a1.User;
-// const Problem = b1.Problem;
-
-
-// ---------------------------------------------------------------------------------------
-
-
-// const db1 = mongoose.createConnection(String(process.env.MONGO_URI));
-// // console.log(db1);
-// const Contest = db1.model("Contest", contestSchema);
-// const TempUser = db1.model("TempUser", tempUserSchema);
-// const User = db1.model("User", userSchema);
-
-// const db2 = mongoose.createConnection(String(process.env.MONGO_URI_2));
-// const Problem = db2.model('Problem', problemSchema);
-// console.log(Problem);
-
-
-
-// ---------------------------------------------------------------------------
-
-// connectDb();
-// connectDb2();
-// let Contest;
-// let TempUser;
-// let User;
-// let Problem;
+// Connect to another database for Practice Problems Data.
+const db2 = mongoose.createConnection(String(process.env.MONGO_URI_2));
+const Problem = db2.model('Problem', problemSchema);
+db2.on('error', console.error.bind(console, 'Connection error'));
+module.exports = Problem;
 
 
 
@@ -132,19 +75,3 @@ httpServer.listen(port, () => {
     console.log(`Socket IO listening on port ${port}`);
   }
 });
-
-
-// module.exports = Contest
-// module.exports= TempUser
-// module.exports = User
-// module.exports = Problem
-// module.exports = db1;
-// module.exports = db2;
-// module.exports = {
-//   Contest,
-//   TempUser,
-//   User,
-//   Problem
-// }
-
-

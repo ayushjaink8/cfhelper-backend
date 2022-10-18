@@ -1,9 +1,7 @@
 const express = require("express");
 const cache = require( '../utils/cache');
 const { sendSuccess, sendError } = require( '../utils/utils');
-// const Problem = require ('../index');
-const Problem = require ('../models/problem');
-// const Problem = require ('../config/db2');
+const Problem = require ('../index');
 
 const router = express.Router();
 
@@ -54,7 +52,7 @@ router.get('/ladder', (req, res) => {
 			return;
 		}
 		
-		const uniqueProblems = {};
+		const uniqueProblems = new Set();
 		const finalRes = [];
 		const deltaContestIds = [1, 0, -1];
 
