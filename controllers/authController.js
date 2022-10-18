@@ -4,21 +4,12 @@ const asyncHandler = require("express-async-handler");
 const { User } = require ('../models/userModel');
 const { TempUser } = require ('../models/tempUserModel');
 
-// const User  = require ('../index');
-// const TempUser = require ('../index');
-
-// const { User } = require ('../config/db');
-// const { TempUser } = require ('../config/db');
-
-
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
-
-const { google } = require("googleapis");
 
 const {
   REDIRECT_URI,
@@ -51,12 +42,10 @@ const sendMail = async (user, mailType) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      type: "OAuth2",
       user: process.env.CFLOCKOUT_EMAIL_ID,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.CFLOCKOUT_REFRESH_TOKEN,
-      expires: 10e14,
+      pass: process.env.CFLOCKOUT_EMAIL_PASSWORD,
+      port: 465,
+      host: 'smtp.gmail.com'
     },
   });
 

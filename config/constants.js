@@ -13,8 +13,8 @@ const VERIFY_EMAIL = "VERIFY_EMAIL";
 const RESET_PASSWORD = "RESET_PASSWORD";
 const CLIENT_URL =
   process.env.NODE_ENV === "production"
-    ? "https://cflockout.live"
-    : "http://localhost:3000";
+    ? "https://ayushjaink8.github.io/cfhelper"
+    : "http://localhost:3000/cfhelper";
 
 module.exports = {
   MIN_DURATION,
