@@ -17,7 +17,6 @@ const makeCodeforcesRequest = async (config) => {
       const data = await axios
         .request(config)
         .then((response) => {
-          console.log("h2");
           if (response.data && response.data.status === "OK") {
             return { status: "OK", data: response.data };
           } else {
@@ -130,8 +129,6 @@ async function getAllDeltas(contestId) {
     method: 'get',
     url: serverOld
   });
-
-  // console.log(res);
 
   if (res && res.status && res.status === "OK") {
     if(res.data.status && res.data.status === "FAIL"){

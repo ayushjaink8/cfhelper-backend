@@ -93,7 +93,6 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Check if user already exists.
-  console.log(User);
   const userAlreadyInDb = await User.findOne({ email });
   if (userAlreadyInDb && userAlreadyInDb.verified) {
     res.status(400);
@@ -137,7 +136,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!errors.isEmpty()) {
     throw new Error(errors.array()[0].msg);
   }
-  console.log(User);
+  
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
