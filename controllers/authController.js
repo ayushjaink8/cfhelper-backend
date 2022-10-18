@@ -60,7 +60,12 @@ const sendMail = async (user, mailType) => {
         mailType === VERIFY_EMAIL
           ? getVerifyMailOptions(user, emailToken)
           : getResetPasswordMailOptions(user, emailToken);
-      transporter.sendMail(mailOptions);
+      new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (err, res) => {
+          if(err) console.log(err);
+          else resolve(res);
+        });
+      })
     }
   );
 };
