@@ -15,8 +15,8 @@ const EMAILJS_URL = "https://api.emailjs.com/api/v1.0/email/send"
 
 const CLIENT_URL =
   process.env.NODE_ENV === "production"
-    ? "https://ayushjaink8.github.io/cfhelper"
-    : "http://localhost:3000/cfhelper";
+    ? "https://ayushjaink8.github.io/cfhelper/#"
+    : "http://localhost:3000/cfhelper/#";
 
 module.exports = {
   MIN_DURATION,
