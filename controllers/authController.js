@@ -67,7 +67,7 @@ const sendMail = async (user, mailType) => {
         throw new Error("Invalid Email Type.");
       } else {
 
-        axios.post(EMAILJS_URL, mailData)
+        await axios.post(EMAILJS_URL, mailData)
         .then((response) => ({status: "success", res: response}))
         .catch((error) => ({status: "FAILED", error: error}));
 
@@ -114,7 +114,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
 
-    sendMail(user, VERIFY_EMAIL);
+    await sendMail(user, VERIFY_EMAIL);
 
     res.status(201).json({
       success: true,
