@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 
-
 const { User } = require ('../models/userModel');
 const { TempUser } = require ('../models/tempUserModel');
 
@@ -9,45 +8,50 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
 
 const {
-  REDIRECT_URI,
   CLIENT_URL,
   RESET_PASSWORD,
   VERIFY_EMAIL,
+  EMAILJS_URL,
 } = require("../config/constants");
 
-const getVerifyMailOptions = (user, emailToken) => {
-  const url = `${CLIENT_URL}/verify?token=${emailToken}`;
-  return {
-    from: process.env.CFLOCKOUT_EMAIL_ID,
-    to: user.email,
-    subject: "Verify your account",
-    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
-  };
-};
+const getmailData = (user, emailToken, mailType) => {
+  var url;
+  var mail_purpose;
+  var subject;
 
-const getResetPasswordMailOptions = (user, emailToken) => {
-  const url = `${CLIENT_URL}/auth/verify/reset-password-token?token=${emailToken}`;
-  return {
-    from: process.env.CFLOCKOUT_EMAIL_ID,
-    to: user.email,
-    subject: "Reset your password",
-    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to reset your password.<br> <a href="${url}">Click here to reset</a></h3>`,
-  };
-};
+  if(mailType===VERIFY_EMAIL){
+    url = `${CLIENT_URL}/verify?token=${emailToken}`;
+    mail_purpose = "verify your email"
+    subject = "CFHelper: Kindly verify your account!"
+  } else if (mailType===RESET_PASSWORD){
+    url = `${CLIENT_URL}/auth/verify/reset-password-token?token=${emailToken}`;
+    mail_purpose = "reset your password"
+    subject = "CFHelper: Request to reset your CFHelper password!"
+  } else {
+    return null;
+  }
+
+  const data = {
+    service_id: 'emailjs_gmail',
+    template_id: 'cfhelper_template',
+    user_id: process.env.EMAILJS_PUBLIC_KEY,
+    accessToken: process.env.EMAILJS_PRIVATE_KEY,
+    template_params: {
+      to_email: user.email,
+      to_name: user.name,
+      purpose: mail_purpose,
+      subject: subject,
+      token_url: url
+    }
+  }
+
+  return data;
+}
+
 
 const sendMail = async (user, mailType) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.CFLOCKOUT_EMAIL_ID,
-      pass: process.env.CFLOCKOUT_EMAIL_PASSWORD,
-      port: 465,
-      host: 'smtp.gmail.com'
-    },
-  });
 
   jwt.sign(
     { id: user._id },
@@ -55,17 +59,20 @@ const sendMail = async (user, mailType) => {
     {
       expiresIn: "1d",
     },
-    (err, emailToken) => {
-      const mailOptions =
-        mailType === VERIFY_EMAIL
-          ? getVerifyMailOptions(user, emailToken)
-          : getResetPasswordMailOptions(user, emailToken);
-      new Promise((resolve, reject) => {
-        transporter.sendMail(mailOptions, (err, res) => {
-          if(err) console.log(err);
-          else resolve(res);
-        });
-      })
+    async (err, emailToken) => {
+
+      const mailData = getmailData(user, emailToken, mailType);
+
+      if(mailData===null) {
+        throw new Error("Invalid Email Type.");
+      } else {
+
+        axios.post(EMAILJS_URL, mailData)
+        .then((response) => ({status: "success", res: response}))
+        .catch((error) => ({status: "FAILED", error: error}));
+
+      }
+      
     }
   );
 };
@@ -106,6 +113,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+
     sendMail(user, VERIFY_EMAIL);
 
     res.status(201).json({
@@ -119,6 +127,7 @@ const registerUser = asyncHandler(async (req, res) => {
         verified: user.verified,
       },
     });
+
   } else {
     res.status(400);
     throw new Error("Invalid user Data");

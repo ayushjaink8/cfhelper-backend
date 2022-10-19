@@ -11,6 +11,8 @@ const CF_API_URL = "https://codeforces.com/api";
 const REDIRECT_URI = "https://developers.google.com/oauthplayground";
 const VERIFY_EMAIL = "VERIFY_EMAIL";
 const RESET_PASSWORD = "RESET_PASSWORD";
+const EMAILJS_URL = "https://api.emailjs.com/api/v1.0/email/send"
+
 const CLIENT_URL =
   process.env.NODE_ENV === "production"
     ? "https://ayushjaink8.github.io/cfhelper"
@@ -30,5 +32,6 @@ module.exports = {
   REDIRECT_URI,
   VERIFY_EMAIL,
   RESET_PASSWORD,
+  EMAILJS_URL,
   CLIENT_URL,
 };
